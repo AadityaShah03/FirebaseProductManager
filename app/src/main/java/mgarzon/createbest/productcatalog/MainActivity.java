@@ -14,8 +14,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     EditText editTextPrice;
     Button buttonAddProduct;
     ListView listViewProducts;
-
+    DatabaseReference databaseProducts;
     List<Product> products;
 
     @Override
@@ -31,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        databaseProducts = FirebaseDatabase.getInstance().getReference("products");
         editTextName = (EditText) findViewById(R.id.editTextName);
         editTextPrice = (EditText) findViewById(R.id.editTextPrice);
         listViewProducts = (ListView) findViewById(R.id.listViewProducts);
@@ -60,6 +68,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        databaseProducts.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @android.support.annotation.NonNull DataSnapshot snapshot) {
+                products.clear();
+                for (DataSnapshot post: snapshot.getChildren()) {
+                    Product product = post.getValue(Product.class);
+                    products.add(product);
+                }
+                ProductList productsAdapter = new ProductList(MainActivity.this,products);
+                listViewProducts.setAdapter(productsAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull @android.support.annotation.NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 
@@ -111,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addProduct() {
+        String name = editTextName.getText().toString().trim();
 
-        Toast.makeText(this, "NOT IMPLEMENTED YET", Toast.LENGTH_LONG).show();
     }
 }
