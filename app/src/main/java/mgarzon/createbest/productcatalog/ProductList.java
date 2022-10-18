@@ -1,8 +1,5 @@
 package mgarzon.createbest.productcatalog;
 
-/**
- * Created by Miguel Garzón on 2017-05-09.
- */
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 public class ProductList extends ArrayAdapter<Product> {
-private Activity context;
+private final Activity context;
         List<Product> products;
 
 public ProductList(Activity context, List<Product> products) {

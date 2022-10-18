@@ -1,13 +1,10 @@
 package mgarzon.createbest.productcatalog;
 
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.app.AlertDialog;
 import android.os.Bundle;
-
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,10 +16,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         databaseProducts.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull @android.support.annotation.NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 products.clear();
                 for (DataSnapshot post: snapshot.getChildren()) {
                     Product product = post.getValue(Product.class);
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull @android.support.annotation.NonNull DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
@@ -126,17 +126,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateProduct(String id, String name, double price) {
-
-        Toast.makeText(getApplicationContext(), "NOT IMPLEMENTED YET", Toast.LENGTH_LONG).show();
+        DatabaseReference dR = FirebaseDatabase.getInstance().getReference("products").child(id);
+        Product product = new Product(id,name,price);
+        dR.setValue(product);
+        Toast.makeText(this,"Product Updated",Toast.LENGTH_LONG).show();
     }
 
     private void deleteProduct(String id) {
-
-        Toast.makeText(getApplicationContext(), "NOT IMPLEMENTED YET", Toast.LENGTH_LONG).show();
+        DatabaseReference dR = FirebaseDatabase.getInstance().getReference("products").child(id);
+        dR.removeValue();
+        Toast.makeText(this,"Product Removed", Toast.LENGTH_LONG).show();
     }
 
     private void addProduct() {
         String name = editTextName.getText().toString().trim();
-
+        double price = Double.parseDouble(String.valueOf(editTextPrice.getText().toString()));
+        if(TextUtils.isEmpty(name)){
+            Toast.makeText(this,"Enter a name",Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(this,"Product Added",Toast.LENGTH_LONG).show();
+        }
+        String id = databaseProducts.push().getKey();
+        Product product = new Product(id,name,price);
+        databaseProducts.child(Objects.requireNonNull(id)).setValue(product);
+        editTextName.setText("");
+        editTextPrice.setText("");
     }
 }
