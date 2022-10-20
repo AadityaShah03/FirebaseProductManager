@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         }
         String id = databaseProducts.push().getKey();
         Product product = new Product(id,name,price);
-        databaseProducts.child(Objects.requireNonNull(id)).setValue(product);
+        databaseProducts.child(id).setValue(product);
         editTextName.setText("");
         editTextPrice.setText("");
     }
