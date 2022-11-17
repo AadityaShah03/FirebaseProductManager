@@ -30,6 +30,6 @@ public class ExampleUnitTest {
     @Test
     public void checkProductPrice() {
         Product aProduct = new Product("1", "DELL MONITOR", 180);
-        assertEquals(180.0, aProduct.getPrice(), 0);
+        assertEquals(180.00, aProduct.getPrice(), 0);
     }
 }
